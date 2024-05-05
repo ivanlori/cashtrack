@@ -1,6 +1,6 @@
-import { ReactElement, DragEvent, useState } from 'react'
+import { ReactElement, useState } from 'react'
 import { Navbar } from './Navbar'
-import { BsDownload, BsUpload } from "react-icons/bs";
+import { BsDownload } from "react-icons/bs";
 import { db } from './db'
 import cn from 'classnames'
 import Dexie from 'dexie';
@@ -28,63 +28,46 @@ const onExport = async () => {
 }
 
 export const SettingsPage = (): ReactElement => {
-  const [isDragging, setIsDragging] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState(false)
   const [isHalfLoading, setIsHalfLoading] = useState(false)
   const [isOneThirdLoading, setIsOneThirdLoading] = useState(false)
+  const [file, setFile] = useState<File | null>(null)
   const navigate = useNavigate()
 
-  const handleDragEnter = (e: DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    setIsDragging(true);
-  };
+  const onUpload = async () => {
+    if (file?.type === 'application/json') {
+      try {
+        await db.delete()
+        await Dexie.import(file, {
+          progressCallback: ({ totalRows, completedRows }) => {
+            setIsLoading(true)
 
-  const handleDragLeave = (e: DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    setIsDragging(false);
-  };
+            if (totalRows && completedRows) {
+              const oneThird = totalRows && totalRows / 3
+              const half = totalRows && totalRows / 2
 
-  const onUpload = async (blob: Blob) => {
-    try {
-      await db.delete()
-      await Dexie.import(blob, {
-        progressCallback: ({ totalRows, completedRows }) => {
-          setIsLoading(true)
-
-          if (totalRows && completedRows) {
-            const oneThird = totalRows && totalRows / 3
-            const half = totalRows && totalRows / 2
-
-            if (oneThird === totalRows) {
-              setIsOneThirdLoading(true)
-              setIsHalfLoading(false)
-            } else if (half === totalRows) {
-              setIsOneThirdLoading(false)
-              setIsHalfLoading(true)
-            } else {
-              setIsLoading(false)
-              navigate(0)
+              if (oneThird === totalRows) {
+                setIsOneThirdLoading(true)
+                setIsHalfLoading(false)
+              } else if (half === totalRows) {
+                setIsOneThirdLoading(false)
+                setIsHalfLoading(true)
+              } else {
+                setIsLoading(false)
+                navigate(0)
+              }
             }
+
+            return false
           }
-
-          return false
-        }
-      })
-    } catch (error) {
-      console.error('Error importing db:', error);
-    }
-  }
-
-  const handleDrop = (e: DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    setIsDragging(false);
-    const file = e.dataTransfer.files[0];
-    if (file.type === 'application/json') {
-      onUpload(file)
+        })
+      } catch (error) {
+        console.error('Error importing db:', error);
+      }
     } else {
       alert('Please drop a JSON file.');
     }
-  };
+  }
 
   return (
     <>
@@ -102,16 +85,21 @@ export const SettingsPage = (): ReactElement => {
           </li>
           <li>
             <div
-              className={`border-2 border-dashed border-gray-400 rounded-lg p-4 text-center ${isDragging ? 'bg-gray-200' : ''
-                }`}
-              onDragOver={(e) => e.preventDefault()}
-              onDragEnter={handleDragEnter}
-              onDragLeave={handleDragLeave}
-              onDrop={handleDrop}
+              className="border border-gray-400 rounded-lg p-4 text-center"
             >
-              <p className="text-lg flex items-center gap-2">
-                <BsUpload /> Drag & drop your DB as JSON file here,<br />or click to select
-              </p>
+              <input
+                type="file"
+                className="text-lg flex items-center gap-2"
+                onChange={(e) => setFile(e.target.files && e.target.files[0])}
+                placeholder="Scelgi un file JSON"
+                accept="application/json"
+              />
+              <button
+                onClick={onUpload}
+                className="bg-white mt-2 flex w-full justify-center items-center gap-2 rounded-lg text-xl border-gray-600 border-2 text-gray-600 text-center px-5 py-3 transition duration-300 ease-in-out"
+              >
+                Upload
+              </button>
               {isLoading && (
                 <div className="w-full h-2 bg-blue-200 rounded-full">
                   <div className={cn("h-full text-center text-xs text-white bg-blue-600 rounded-full", {
