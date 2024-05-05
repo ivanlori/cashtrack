@@ -1,13 +1,20 @@
 import { ChangeEvent, useState } from 'react';
-import './App.css';
+import styles from './App.module.css';
 import { useLiveQuery } from "dexie-react-hooks";
 import moment from 'moment'
 import cn from 'classnames'
-import { useSpring, animated, SpringValue } from '@react-spring/web';
+import {
+  LeadingActions,
+  SwipeableList,
+  SwipeableListItem,
+  SwipeAction,
+  TrailingActions,
+  Type,
+} from 'react-swipeable-list';
+import 'react-swipeable-list/dist/styles.css';
 import { CiCircleMinus, CiEdit } from "react-icons/ci";
 import "dexie-export-import";
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { useDrag } from '@use-gesture/react';
 import { Navbar } from './Navbar';
 import { db } from './db'
 
@@ -54,30 +61,10 @@ const App = () => {
     }
   } = useForm<FormValues>()
   const expenseTable = db.table('expenses')
-  const [isSwiped, setSwiped] = useState(false);
   const [category, setCategory] = useState('')
   const [isLoadingList, setLoadingList] = useState(true)
   const [isLoadingPreviousTotal, setLoadingPreviousTotal] = useState(true)
   const [isLoadingCurrentTotal, setLoadingCurrentTotal] = useState(true)
-
-  const [{ x }, api] = useSpring<{ x: SpringValue<number> }>(() => ({
-    x: 0,
-    onRest: () => {
-      if (!isSwiped) {
-        api.start({ x: 0 });
-      }
-    },
-  }));
-
-  const bind = useDrag(({ down, movement: [mx], cancel }) => {
-    if (mx > 80) cancel();
-
-    api.start({ x: down ? mx : 0 });
-
-    if (mx < -80) setSwiped(true);
-
-    if (mx > 10) setSwiped(false);
-  });
 
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
     await expenseTable.add({
@@ -143,8 +130,8 @@ const App = () => {
   return (
     <div className="App">
       <Navbar />
-      <main className="mx-10">
-        <div className="mb-3 flex justify-between items-center">
+      <main>
+        <div className="mx-10 mb-3 flex justify-between items-center">
           <div className="previous-month flex items-center gap-2">
             <span className="text-md text-gray-400">
               {months[new Date().getMonth() - 1]}:
@@ -168,7 +155,7 @@ const App = () => {
         </div>
         <form
           onSubmit={handleSubmit(onSubmit)}
-          className="h-40"
+          className="h-40 mx-10"
         >
           <div className="flex gap-3 items-center">
             <div className="flex relative items-center w-2/4">
@@ -215,22 +202,33 @@ const App = () => {
             {errors.expense?.message}
           </span>
         </form>
-        <ul className="mt-5 mx-auto">
+        <SwipeableList className="mt-5 mx-auto" Tag="ul" type={Type.IOS}>
           {allExpenses?.map((item: IDataSaved) => {
             return (
-              <animated.li
-                {...bind(item.id)}
+              <SwipeableListItem
                 key={item.id}
-                className="text-2xl text-right py-2 border-t border-gray-200"
-                style={{
-                  transform: x.to(x => `translate3d(${x}px,0,0)`),
-                  willChange: 'transform',
-                  position: 'relative',
-                }}
+                maxSwipe={0.5}
+                leadingActions={
+                  (<LeadingActions>
+                    <SwipeAction
+                      onClick={() => showEditInput(item.id, item.value)}
+                    >
+                      <CiEdit />
+                    </SwipeAction>
+                  </LeadingActions>)
+                }
+                trailingActions={
+                  (<TrailingActions>
+                    <SwipeAction
+                      onClick={() => deleteItem(item.id)}
+                    >
+                      <CiCircleMinus />
+                    </SwipeAction>
+                  </TrailingActions>)
+                }
+                className={styles.Item}
               >
-                <div className={cn("flex flex-col items-end gap-2", {
-                  "-translate-x-36": isSwiped
-                })}>
+                <div className="flex flex-col items-end gap mx-10 py-2">
                   <div>
                     {
                       isLoadingList ? renderLoading('w-40') : (
@@ -252,36 +250,10 @@ const App = () => {
                     </span>
                   )}
                 </div>
-                <div
-                  style={{
-                    position: 'absolute',
-                    top: 0,
-                    right: 0,
-                    bottom: 0,
-                    display: 'flex',
-                    alignItems: 'center',
-                    paddingRight: 10,
-                    opacity: isSwiped ? 1 : 0,
-                    transform: isSwiped ? 'translateX(0)' : 'translateX(100%)'
-                  }}
-                >
-                  <button
-                    className="action-button mr-4"
-                    onClick={() => showEditInput(item.id, item.value)}
-                  >
-                    <CiEdit />
-                  </button>
-                  <button
-                    className="action-button"
-                    onClick={() => deleteItem(item.id)}
-                  >
-                    <CiCircleMinus />
-                  </button>
-                </div>
-              </animated.li>
+              </SwipeableListItem>
             )
           })}
-        </ul>
+        </SwipeableList>
       </main >
     </div >
   );

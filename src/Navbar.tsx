@@ -2,7 +2,7 @@ import { ReactElement, useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { CiSettings, CiSquareChevLeft } from "react-icons/ci";
 import cn from 'classnames'
-import './App.css'
+import styles from './App.module.css'
 
 interface Props {
   withBack?: boolean
@@ -59,7 +59,7 @@ export const Navbar = ({
                 <div className="relative flex items-center gap-3">
                   <Link
                     to="/settings"
-                    className="action-button"
+                    className={styles.ActionButton}
                     role="button"
                   >
                     <CiSettings size={25} />
