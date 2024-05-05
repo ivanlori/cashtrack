@@ -56,6 +56,9 @@ const App = () => {
   const expenseTable = db.table('expenses')
   const [isSwiped, setSwiped] = useState(false);
   const [category, setCategory] = useState('')
+  const [isLoadingList, setLoadingList] = useState(true)
+  const [isLoadingPreviousTotal, setLoadingPreviousTotal] = useState(true)
+  const [isLoadingCurrentTotal, setLoadingCurrentTotal] = useState(true)
 
   const [{ x }, api] = useSpring<{ x: SpringValue<number> }>(() => ({
     x: 0,
@@ -86,13 +89,16 @@ const App = () => {
   }
 
   const allExpenses = useLiveQuery(async (): Promise<IDataSaved[]> => {
+    setLoadingList(true)
     return await expenseTable
       .orderBy('date')
       .reverse()
       .toArray()
+      .finally(() => setLoadingList(false))
   }, []);
 
   const totalPreviousMonthExpenses = useLiveQuery(async (): Promise<number> => {
+    setLoadingPreviousTotal(true)
     const previousMonth = new Date().getMonth()
     let total = 0
 
@@ -100,9 +106,11 @@ const App = () => {
       .filter((row) => new Date(row.date).getMonth() + 1 === previousMonth)
       .each((item: IDataSaved, _) => total += Number(item.value))
       .then(() => Number(total.toFixed(2)))
+      .finally(() => setLoadingPreviousTotal(false))
   }, [])
 
   const totalCurrentMonthExpenses = useLiveQuery(async (): Promise<number> => {
+    setLoadingCurrentTotal(true)
     const currentMonth = new Date().getMonth() + 1
     let total = 0
 
@@ -110,14 +118,26 @@ const App = () => {
       .filter((row) => new Date(row.date).getMonth() + 1 === currentMonth)
       .each((item: IDataSaved, _) => total += Number(item.value))
       .then(() => Number(total.toFixed(2)))
+      .finally(() => setLoadingCurrentTotal(false))
   }, [])
 
   const deleteItem = (id: string): void => {
     expenseTable.delete(id)
   }
 
+  const showEditInput = (id: string, valueToEdit: string): void => {
+    const newValue = prompt('Inserisci il nuovo valore', valueToEdit)
+    if (newValue) {
+      expenseTable.update(id, { value: newValue })
+    }
+  }
+
   const getFormattedTotal = (total: number | undefined): string => (
     total ? `${total > 0 ? '-' : ''}${total}€` : 'N/D'
+  )
+
+  const renderLoading = (width: string) => (
+    <span className={`${width} block h-6 bg-gray-300 rounded animate-pulse`} />
   )
 
   return (
@@ -125,21 +145,25 @@ const App = () => {
       <Navbar />
       <main className="mx-10">
         <div className="mb-3 flex justify-between items-center">
-          <div className="previous-month">
+          <div className="previous-month flex items-center gap-2">
             <span className="text-md text-gray-400">
               {months[new Date().getMonth() - 1]}:
             </span>
             {' '}
-            <span className="text-xl text-red-400">
-              {getFormattedTotal(totalPreviousMonthExpenses)}
-            </span>
+            {isLoadingPreviousTotal ? renderLoading('w-14') : (
+              <span className="text-xl text-red-400">
+                {getFormattedTotal(totalPreviousMonthExpenses)}
+              </span>
+            )}
           </div>
-          <div className="current-month">
+          <div className="current-month flex items-center gap-2">
             <span className="text-xl text-gray-600">Mese corrente:</span>
             {' '}
-            <span className="text-2xl text-red-600">
-              {getFormattedTotal(totalCurrentMonthExpenses)}
-            </span>
+            {isLoadingCurrentTotal ? renderLoading('w-14') : (
+              <span className="text-2xl text-red-600">
+                {getFormattedTotal(totalCurrentMonthExpenses)}
+              </span>
+            )}
           </div>
         </div>
         <form
@@ -204,21 +228,29 @@ const App = () => {
                   position: 'relative',
                 }}
               >
-                <div className={cn("flex flex-col", {
+                <div className={cn("flex flex-col items-end gap-2", {
                   "-translate-x-36": isSwiped
                 })}>
                   <div>
-                    <span className="text-gray-600 text-xl">
-                      {categories[item.category]}
-                    </span>
-                    {' '}
-                    <span className="text-red-600">
-                      {`-${item.value}€`}
-                    </span>
+                    {
+                      isLoadingList ? renderLoading('w-40') : (
+                        <>
+                          <span className="text-gray-600 text-xl">
+                            {categories[item.category]}
+                          </span>
+                          {' '}
+                          <span className="text-red-600">
+                            {`-${item.value}€`}
+                          </span>
+                        </>
+                      )
+                    }
                   </div>
-                  <span className="text-base text-gray-600">
-                    {moment(item.date).format('LLL')}
-                  </span>
+                  {isLoadingList ? renderLoading('w-40') : (
+                    <span className="text-base text-gray-600">
+                      {moment(item.date).format('LLL')}
+                    </span>
+                  )}
                 </div>
                 <div
                   style={{
@@ -234,12 +266,13 @@ const App = () => {
                   }}
                 >
                   <button
-                    className="flex items-center justify-center w-12 h-12 transition-colors duration-150 ease-in-out bg-transparent border border-solid shadow-none cursor-pointer rounded-2xl border-stone-300 hover:bg-slate-100 focus:bg-slate-100 mr-4"
+                    className="action-button mr-4"
+                    onClick={() => showEditInput(item.id, item.value)}
                   >
                     <CiEdit />
                   </button>
                   <button
-                    className="flex items-center justify-center w-12 h-12 transition-colors duration-150 ease-in-out bg-transparent border border-solid shadow-none cursor-pointer rounded-2xl border-stone-300 hover:bg-slate-100 focus:bg-slate-100"
+                    className="action-button"
                     onClick={() => deleteItem(item.id)}
                   >
                     <CiCircleMinus />
@@ -249,8 +282,8 @@ const App = () => {
             )
           })}
         </ul>
-      </main>
-    </div>
+      </main >
+    </div >
   );
 }
 
