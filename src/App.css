@@ -36,3 +36,23 @@
     transform: rotate(360deg);
   }
 }
+
+.action-button {
+  @apply flex;
+  @apply items-center;
+  @apply justify-center;
+  @apply w-12;
+  @apply h-12;
+  @apply transition-colors;
+  @apply duration-150;
+  @apply ease-in-out;
+  @apply bg-transparent;
+  @apply border;
+  @apply border-solid;
+  @apply shadow-none;
+  @apply cursor-pointer;
+  @apply rounded-2xl;
+  @apply border-stone-300;
+  @apply hover:bg-slate-100;
+  @apply focus:bg-slate-100;
+}
