@@ -131,7 +131,7 @@ const App = () => {
     <div className="App">
       <Navbar />
       <main>
-        <div className="mx-10 mb-3 flex justify-between items-center">
+        <div className="mx-10 mb-3">
           <div className="previous-month flex items-center gap-2">
             <span className="text-md text-gray-400">
               {months[new Date().getMonth() - 1]}:
