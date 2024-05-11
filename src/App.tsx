@@ -1,4 +1,4 @@
-import { ChangeEvent, useState } from 'react';
+import { useState } from 'react';
 import styles from './App.module.css';
 import { useLiveQuery } from "dexie-react-hooks";
 import moment from 'moment'
@@ -17,6 +17,7 @@ import "dexie-export-import";
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { Navbar } from './Navbar';
 import { db } from './db'
+import { Select } from './components/Select';
 
 type FormValues = {
   expense: string
@@ -26,15 +27,8 @@ type IDataSaved = {
   id: string,
   value: string,
   date: Date
-  category: number
+  category: string
 }
-
-const categories = [
-  'Cibo',
-  'Abbigliamento',
-  'Telefonia',
-  'Affitto'
-]
 
 const months = [
   'Gennaio',
@@ -61,16 +55,16 @@ const App = () => {
     }
   } = useForm<FormValues>()
   const expenseTable = db.table('expenses')
-  const [category, setCategory] = useState('')
   const [isLoadingList, setLoadingList] = useState(true)
   const [isLoadingPreviousTotal, setLoadingPreviousTotal] = useState(true)
   const [isLoadingCurrentTotal, setLoadingCurrentTotal] = useState(true)
+  const [selectedCategory, setSelectedCategory] = useState<string>('')
 
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
     await expenseTable.add({
       value: data.expense,
       date: new Date(),
-      category
+      category: selectedCategory
     })
     reset()
   }
@@ -158,9 +152,9 @@ const App = () => {
           className="h-40 mx-10"
         >
           <div className="flex gap-3 items-center">
-            <div className="flex relative items-center w-2/4">
+            <div className="flex relative items-center w-1/3">
               <input
-                className={cn("p-3 border text-xl rounded-lg w-full", {
+                className={cn(styles.Input, {
                   "border-red-600": errors.expense?.message
                 })}
                 type="number"
@@ -179,17 +173,10 @@ const App = () => {
               />
               <span className="absolute right-0 mr-3 text-xl">€</span>
             </div>
-            <div className="w-2/4">
-              <select
-                id="categories"
-                className="border border-gray-200 text-xl rounded-lg block w-full p-3 text-gray-600"
-                onChange={(e: ChangeEvent<HTMLSelectElement>) => setCategory(e.target.value)}
-              >
-                <option selected>Categoria</option>
-                {categories.map((item, index) => (
-                  <option value={index}>{item}</option>
-                ))}
-              </select>
+            <div className="w-2/3">
+              <Select
+                onChange={(category) => setSelectedCategory(String(category?.label))}
+              />
             </div>
           </div>
           <button
@@ -234,7 +221,7 @@ const App = () => {
                       isLoadingList ? renderLoading('w-40') : (
                         <>
                           <span className="text-gray-600 text-xl">
-                            {categories[item.category]}
+                            {item.category}
                           </span>
                           {' '}
                           <span className="text-red-600">
@@ -254,8 +241,8 @@ const App = () => {
             )
           })}
         </SwipeableList>
-      </main >
-    </div >
+      </main>
+    </div>
   );
 }
 
