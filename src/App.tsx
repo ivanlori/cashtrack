@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import styles from './App.module.css';
 import { useLiveQuery } from "dexie-react-hooks";
 import moment from 'moment'
@@ -14,13 +14,14 @@ import {
 import 'react-swipeable-list/dist/styles.css';
 import { CiCircleMinus, CiEdit } from "react-icons/ci";
 import "dexie-export-import";
-import { SubmitHandler, useForm } from 'react-hook-form';
+import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { Navbar } from './Navbar';
 import { db } from './db'
-import { Select } from './components/Select';
+import { CustomSelect, Option } from './components/Select';
 
 type FormValues = {
   expense: string
+  category: string
 }
 
 type IDataSaved = {
@@ -46,19 +47,25 @@ const months = [
 ]
 
 const App = () => {
+  const defaultValues: FormValues = useMemo(() => ({
+    expense: '',
+    category: ''
+  }), [])
   const {
     register,
     handleSubmit,
     reset,
+    control,
     formState: {
       errors
-    }
-  } = useForm<FormValues>()
+    },
+  } = useForm<FormValues>({ defaultValues })
   const expenseTable = db.table('expenses')
   const [isLoadingList, setLoadingList] = useState(true)
   const [isLoadingPreviousTotal, setLoadingPreviousTotal] = useState(true)
   const [isLoadingCurrentTotal, setLoadingCurrentTotal] = useState(true)
   const [selectedCategory, setSelectedCategory] = useState<string>('')
+  const [hasSubmitted, setHasSubmitted] = useState<boolean>(false)
 
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
     await expenseTable.add({
@@ -66,6 +73,9 @@ const App = () => {
       date: new Date(),
       category: selectedCategory
     })
+    setHasSubmitted(true)
+
+    // works only for the expense field
     reset()
   }
 
@@ -161,21 +171,40 @@ const App = () => {
                 step=".01"
                 placeholder="0"
                 {...register('expense', {
+                  onChange: () => setHasSubmitted(false),
                   pattern: {
                     value: /^\d+(?:[.,]\d+)*$/,
                     message: 'Valore non valido'
                   },
                   required: {
                     value: true,
-                    message: 'Il campo non deve essere vuoto'
+                    message: 'Inserisci la spesa'
                   }
                 })}
               />
               <span className="absolute right-0 mr-3 text-xl">€</span>
             </div>
             <div className="w-2/3">
-              <Select
-                onChange={(category) => setSelectedCategory(String(category?.label))}
+              <Controller
+                control={control}
+                name="category"
+                rules={{
+                  required: {
+                    value: true,
+                    message: 'Inserisci la categoria'
+                  },
+                }}
+                render={({ field: { onChange } }) => (
+                  <CustomSelect
+                    showErrorStyle={errors.category?.message !== undefined}
+                    resetValue={hasSubmitted}
+                    onChange={(value: Option | null) => {
+                      setSelectedCategory(value?.label || '')
+                      setHasSubmitted(false)
+                      onChange(value?.value)
+                    }}
+                  />
+                )}
               />
             </div>
           </div>
@@ -187,6 +216,8 @@ const App = () => {
           </button>
           <span className="text-red-600 mt-2 block">
             {errors.expense?.message}
+            <br />
+            {errors.category?.message}
           </span>
         </form>
         <SwipeableList className="mt-5 mx-auto" Tag="ul" type={Type.IOS}>

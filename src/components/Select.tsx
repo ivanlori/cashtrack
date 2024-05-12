@@ -2,7 +2,7 @@ import { ReactElement, useEffect, useState } from "react"
 import CreatableSelect from "react-select/creatable"
 import { db } from "../db";
 
-interface Option {
+export interface Option {
   readonly label: string;
   readonly value: string;
 }
@@ -13,11 +13,15 @@ const createOption = (label: string) => ({
 });
 
 interface Props {
+  readonly showErrorStyle: boolean;
+  readonly resetValue: boolean;
   readonly onChange: (value: Option | null) => void;
 }
 
-export const Select = ({
-  onChange
+export const CustomSelect = ({
+  showErrorStyle,
+  resetValue,
+  onChange,
 }: Props): ReactElement => {
   const [options, setOptions] = useState<Option[]>([]);
   const [value, setValue] = useState<Option | null>();
@@ -33,15 +37,22 @@ export const Select = ({
     db.table('categories').toArray().then((categories) => {
       setOptions(categories.map(({ name }) => createOption(name)));
     });
-  })
+  }, [])
+
+  useEffect(() => {
+    if (resetValue) {
+      setValue(null);
+    }
+  }, [resetValue])
 
   return (
     <CreatableSelect
       styles={{
         control: (baseStyles) => ({
           ...baseStyles,
-          padding: 7,
-          borderColor: 'inherit',
+          padding: 8,
+          borderColor: showErrorStyle ? 'red' : 'inherit',
+          borderRadius: 6,
         }),
       }}
       isClearable
@@ -52,6 +63,7 @@ export const Select = ({
       onCreateOption={handleCreate}
       options={options}
       value={value}
+      placeholder="Seleziona o crea una categoria"
     />
   )
 }

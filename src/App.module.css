@@ -63,7 +63,6 @@
   @apply text-xl;
   @apply rounded-lg;
   @apply w-full;
-  @apply outline-blue-400;
 }
 
 .Item {
