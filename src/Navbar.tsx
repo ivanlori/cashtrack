@@ -34,10 +34,10 @@ export const Navbar = ({
   }, [lastScrollY, controlNavbar]);
 
   return (
-    <header className={cn("sticky top-0 mb-6 z-50", {
+    <header className={cn("sticky bg-white top-0 mb-6 z-50", {
       "border-b-2 border-b-gray-200": showBorder
     })}>
-      <div className="mx-auto w-11/12 bg-white rounded-xl">
+      <div className="px-5">
         <div className="p-4 flex justify-between">
           <div className="flex justify-center items-center gap-2">
             {withBack && (
