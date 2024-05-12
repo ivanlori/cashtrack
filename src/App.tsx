@@ -159,10 +159,10 @@ const App = () => {
         </div>
         <form
           onSubmit={handleSubmit(onSubmit)}
-          className="h-40 mx-10"
+          className="h-60 mx-10"
         >
-          <div className="flex gap-3 items-center">
-            <div className="flex relative items-center w-1/3">
+          <div className="flex flex-col gap-3">
+            <div className="flex relative items-center">
               <input
                 className={cn(styles.Input, {
                   "border-red-600": errors.expense?.message
@@ -184,29 +184,27 @@ const App = () => {
               />
               <span className="absolute right-0 mr-3 text-xl">€</span>
             </div>
-            <div className="w-2/3">
-              <Controller
-                control={control}
-                name="category"
-                rules={{
-                  required: {
-                    value: true,
-                    message: 'Inserisci la categoria'
-                  },
-                }}
-                render={({ field: { onChange } }) => (
-                  <CustomSelect
-                    showErrorStyle={errors.category?.message !== undefined}
-                    resetValue={hasSubmitted}
-                    onChange={(value: Option | null) => {
-                      setSelectedCategory(value?.label || '')
-                      setHasSubmitted(false)
-                      onChange(value?.value)
-                    }}
-                  />
-                )}
-              />
-            </div>
+            <Controller
+              control={control}
+              name="category"
+              rules={{
+                required: {
+                  value: true,
+                  message: 'Inserisci la categoria'
+                },
+              }}
+              render={({ field: { onChange } }) => (
+                <CustomSelect
+                  showErrorStyle={errors.category?.message !== undefined}
+                  resetValue={hasSubmitted}
+                  onChange={(value: Option | null) => {
+                    setSelectedCategory(value?.label || '')
+                    setHasSubmitted(false)
+                    onChange(value?.value)
+                  }}
+                />
+              )}
+            />
           </div>
           <button
             type="submit"
