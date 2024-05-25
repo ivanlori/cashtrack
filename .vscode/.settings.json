@@ -1,0 +1,16 @@
+{
+	"editor.formatOnSave": true,
+	"editor.codeActionsOnSave": {
+		"source.fixAll": "explicit"
+	},
+	"jest.autoRun": {
+		"watch": false
+	},
+	"eslint.workingDirectories": [
+		"./src"
+	],
+	"eslint.validate": [
+		"typescript",
+		"typescriptreact"
+	]
+}

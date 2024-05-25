@@ -1,0 +1,96 @@
+{
+	"parser": "@typescript-eslint/parser",
+	"extends": [
+		"eslint:recommended",
+		"plugin:react/recommended",
+		"plugin:@typescript-eslint/recommended",
+		"plugin:jest-dom/recommended",
+		"plugin:testing-library/react",
+		"plugin:react-hooks/recommended"
+	],
+	"plugins": [
+		"formatjs",
+		"import",
+		"jest-dom",
+		"jsx-a11y",
+		"react",
+		"react-hooks",
+		"testing-library",
+		"typescript"
+	],
+	"parserOptions": {
+		"requireConfigFile": false,
+		"project": [
+			"./tsconfig.json"
+		]
+	},
+	"rules": {
+		"react/prop-types": "off",
+		"react/require-default-props": "off",
+		"react/style-prop-object": "off",
+		"no-shadow": "off",
+		"no-undef": "off",
+		"formatjs/no-offset": "error",
+		"testing-library/await-async-queries": "error",
+		"testing-library/no-await-sync-queries": "error",
+		"testing-library/no-debugging-utils": "off",
+		"testing-library/no-dom-import": "off",
+		"jest-dom/prefer-checked": "error",
+		"jest-dom/prefer-enabled-disabled": "error",
+		"jest-dom/prefer-required": "error",
+		"jest-dom/prefer-to-have-attribute": "error",
+		"react/react-in-jsx-scope": "off",
+		"react/jsx-uses-react": "off",
+		"no-console": "error",
+		"semi": "off",
+		"no-extra-semi": "error",
+		"@typescript-eslint/no-unused-vars": "error",
+		"no-param-reassign": [
+			"error",
+			{
+				"props": true,
+				"ignorePropertyModificationsFor": [
+					"draft"
+				]
+			}
+		],
+		"@typescript-eslint/no-parameter-properties": "off",
+		"@typescript-eslint/no-explicit-any": "off"
+	},
+	"overrides": [
+		{
+			"files": [
+				"**/__tests__/**/*.[jt]s?(x)",
+				"**/?(*.)+(spec|test).[jt]s?(x)"
+			],
+			"extends": [
+				"plugin:testing-library/react"
+			]
+		},
+		{
+			"files": [
+				"**/*.tsx",
+				"**/*.ts"
+			],
+			"rules": {
+				"no-restricted-syntax": [
+					"off",
+					"ExportDefaultDeclaration"
+				]
+			}
+		}
+	],
+	"env": {
+		"jest": true
+	},
+	"globals": {
+		"window": true,
+		"document": true,
+		"Blob": true
+	},
+	"settings": {
+		"react": {
+			"version": "detect"
+		}
+	}
+}
