@@ -13,11 +13,13 @@ import {
 } from 'react-swipeable-list';
 import 'react-swipeable-list/dist/styles.css';
 import { CiCircleMinus, CiEdit } from "react-icons/ci";
+import { GoChevronRight, GoChevronDown } from "react-icons/go";
 import "dexie-export-import";
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { Navbar } from './Navbar';
 import { db } from './db';
 import { CustomSelect, Option } from './components/Select';
+import classNames from 'classnames';
 
 type FormValues = {
 	expense: string
@@ -29,6 +31,11 @@ type IDataSaved = {
 	value: string,
 	date: Date,
 	category: string
+}
+
+type ICategoryExpense = {
+	category: string,
+	total: number
 }
 
 const months = [
@@ -63,10 +70,11 @@ const App = (): ReactElement => {
 	} = useForm<FormValues>({ defaultValues })
 	const expenseTable = db.table('expenses')
 	const [isLoadingList, setLoadingList] = useState(true)
-	const [isLoadingPreviousTotal, setLoadingPreviousTotal] = useState(true)
-	const [isLoadingCurrentTotal, setLoadingCurrentTotal] = useState(true)
+	const [isLoadingPreviousTotal, setIsLoadingPreviousTotal] = useState(true)
+	const [isLoadingCurrentTotal, setIsLoadingCurrentTotal] = useState(true)
 	const [selectedCategory, setSelectedCategory] = useState<string>('')
 	const [hasSubmitted, setHasSubmitted] = useState<boolean>(false)
+	const [showExpensesDetails, setShowExpensesDetails] = useState<boolean>(false)
 
 	const onSubmit: SubmitHandler<FormValues> = async (data): Promise<void> => {
 		await expenseTable.add({
@@ -89,8 +97,16 @@ const App = (): ReactElement => {
 			.finally(() => setLoadingList(false))
 	}, []);
 
+	const currentMonthExpenses = useLiveQuery(async (): Promise<IDataSaved[]> => {
+		const currentMonth = new Date().getMonth() + 1
+
+		return await expenseTable
+			.filter((row) => new Date(row.date).getMonth() + 1 === currentMonth)
+			.toArray()
+	}, [])
+
 	const totalPreviousMonthExpenses = useLiveQuery(async (): Promise<number> => {
-		setLoadingPreviousTotal(true)
+		setIsLoadingPreviousTotal(true)
 		const previousMonth = new Date().getMonth()
 		let total = 0
 
@@ -98,11 +114,11 @@ const App = (): ReactElement => {
 			.filter((row) => new Date(row.date).getMonth() + 1 === previousMonth)
 			.each((item: IDataSaved) => total += Number(item.value))
 			.then(() => Number(total.toFixed(2)))
-			.finally(() => setLoadingPreviousTotal(false))
+			.finally(() => setIsLoadingPreviousTotal(false))
 	}, [])
 
 	const totalCurrentMonthExpenses = useLiveQuery(async (): Promise<number> => {
-		setLoadingCurrentTotal(true)
+		setIsLoadingCurrentTotal(true)
 		const currentMonth = new Date().getMonth() + 1
 		let total = 0
 
@@ -110,7 +126,7 @@ const App = (): ReactElement => {
 			.filter((row) => new Date(row.date).getMonth() + 1 === currentMonth)
 			.each((item: IDataSaved) => total += Number(item.value))
 			.then(() => Number(total.toFixed(2)))
-			.finally(() => setLoadingCurrentTotal(false))
+			.finally(() => setIsLoadingCurrentTotal(false))
 	}, []);
 
 	const deleteItem = (id: string): void => {
@@ -132,6 +148,29 @@ const App = (): ReactElement => {
 		<span className={`${width} block h-6 bg-gray-300 rounded animate-pulse`} />
 	)
 
+	const totalsPerCategory = useMemo((): ICategoryExpense[] => {
+		if (currentMonthExpenses && currentMonthExpenses.length > 0) {
+			return currentMonthExpenses.reduce<ICategoryExpense[]>((acc, { category, value }) => {
+				const existingCategory = acc.find(itemFound => itemFound.category.toLowerCase() === category.toLowerCase());
+				if (existingCategory) {
+					return acc.map((item: ICategoryExpense) => {
+						if (item.category.toLowerCase() === category.toLowerCase()) {
+							return {
+								category,
+								total: Number(item.total) + Number(value)
+							}
+						}
+						return item
+					})
+				} else {
+					return [...acc, { category, total: Number(value) }];
+				}
+			}, [])
+		} else {
+			return []
+		}
+	}, [currentMonthExpenses])
+
 	return (
 		<div className="App">
 			<Navbar />
@@ -148,14 +187,63 @@ const App = (): ReactElement => {
 							</span>
 						)}
 					</div>
-					<div className="current-month flex items-center gap-2">
-						<span className="text-xl text-gray-600">Mese corrente:</span>
-						{' '}
-						{isLoadingCurrentTotal ? renderLoading('w-14') : (
-							<span className="text-2xl text-red-600">
-								{getFormattedTotal(totalCurrentMonthExpenses)}
-							</span>
-						)}
+					<div className="flex items-center gap-2">
+						<div
+							className="current-month gap-2 flex items-center cursor-pointer"
+							onClick={() => {
+								totalsPerCategory.length > 0 && setShowExpensesDetails(!showExpensesDetails)
+							}}
+						>
+							<span className="text-xl text-gray-600">Mese corrente:</span>
+							{isLoadingCurrentTotal ? renderLoading('w-14') : (
+								<span className="text-2xl text-red-600">
+									{getFormattedTotal(totalCurrentMonthExpenses)}
+								</span>
+							)}
+							{
+								totalsPerCategory.length > 0 && (
+									<>
+										<GoChevronRight
+											className={classNames({
+												"block": !showExpensesDetails,
+												"hidden": showExpensesDetails
+											})}
+											size={22}
+										/>
+										<GoChevronDown
+											className={classNames({
+												"block": showExpensesDetails,
+												"hidden": !showExpensesDetails
+											})}
+											size={22}
+										/>
+									</>
+								)
+							}
+						</div>
+					</div>
+
+					<div className={classNames("transition-all duration-300 ease-in-out", {
+						"max-h-0 invisible": !showExpensesDetails,
+						"max-h-screen visible": showExpensesDetails
+					})}>
+						<ul className="flex flex-wrap gap-4 p-3">
+							{totalsPerCategory.map((item, index) => {
+								return (
+									<li
+										key={index}
+										className="flex gap-3"
+									>
+										<span className="text-gray-600">
+											{item.category}:
+										</span>
+										<span className="text-red-600">
+											{getFormattedTotal(item.total)}
+										</span>
+									</li>
+								)
+							})}
+						</ul>
 					</div>
 				</div>
 				<form
