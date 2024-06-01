@@ -41,7 +41,7 @@
 		"jest-dom/prefer-to-have-attribute": "error",
 		"react/react-in-jsx-scope": "off",
 		"react/jsx-uses-react": "off",
-		"no-console": "error",
+		"no-console": "warn",
 		"semi": "off",
 		"no-extra-semi": "error",
 		"@typescript-eslint/no-unused-vars": "error",
