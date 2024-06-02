@@ -80,7 +80,7 @@ export const SettingsPage = (): ReactElement => {
 							onClick={onExport}
 							className="bg-white flex w-full justify-center items-center gap-2 rounded-lg text-xl border-gray-600 border-2 text-gray-600 text-center px-5 py-3 transition duration-300 ease-in-out"
 						>
-							Export Database
+							Esporta Database
 							<BsDownload />
 						</button>
 					</li>
@@ -101,7 +101,7 @@ export const SettingsPage = (): ReactElement => {
 								onClick={onUpload}
 								className="bg-white mt-2 flex w-full justify-center items-center gap-2 rounded-lg text-xl border-gray-600 border-2 text-gray-600 text-center px-5 py-3 transition duration-300 ease-in-out"
 							>
-								Upload
+								Carica database
 							</button>
 							{isLoading && (
 								<div className="w-full h-2 bg-blue-200 rounded-full">
