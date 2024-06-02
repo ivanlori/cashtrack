@@ -73,7 +73,7 @@ exports[`should match snapshot 1`] = `
             <span
               class="text-md text-gray-400"
             >
-              Aprile
+              Maggio
               :
             </span>
              
@@ -82,16 +82,26 @@ exports[`should match snapshot 1`] = `
             />
           </div>
           <div
-            class="current-month flex items-center gap-2"
+            class="flex items-center gap-2"
           >
-            <span
-              class="text-xl text-gray-600"
+            <div
+              class="current-month gap-2 flex items-center cursor-pointer"
             >
-              Mese corrente:
-            </span>
-             
-            <span
-              class="w-14 block h-6 bg-gray-300 rounded animate-pulse"
+              <span
+                class="text-xl text-gray-600"
+              >
+                Mese corrente:
+              </span>
+              <span
+                class="w-14 block h-6 bg-gray-300 rounded animate-pulse"
+              />
+            </div>
+          </div>
+          <div
+            class="transition-all duration-300 ease-in-out max-h-0 invisible"
+          >
+            <ul
+              class="flex flex-wrap gap-4 p-3"
             />
           </div>
         </div>
