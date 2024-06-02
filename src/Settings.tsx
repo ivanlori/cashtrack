@@ -5,6 +5,7 @@ import { db } from './db'
 import cn from 'classnames'
 import Dexie from 'dexie';
 import { useNavigate } from 'react-router-dom'
+import packageJson from '../package.json'
 
 const onExport = async (): Promise<void> => {
 	try {
@@ -115,6 +116,9 @@ export const SettingsPage = (): ReactElement => {
 					</li>
 				</ul>
 			</main>
+			<div className="fixed bottom-0 p-3 w-full text-center">
+				<p>Versione: {packageJson.version}</p>
+			</div>
 		</>
 	)
 }
