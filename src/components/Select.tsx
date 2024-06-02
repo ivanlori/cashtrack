@@ -63,6 +63,7 @@ export const CustomSelect = ({
 				setValue(newValue);
 				onChange(newValue);
 			}}
+			formatCreateLabel={(inputValue: string) => `Crea categoria "${inputValue}"`}
 			onCreateOption={handleCreate}
 			options={options}
 			value={value}

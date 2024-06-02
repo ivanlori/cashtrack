@@ -75,6 +75,7 @@ const App = (): ReactElement => {
 	const [selectedCategory, setSelectedCategory] = useState<string>('')
 	const [hasSubmitted, setHasSubmitted] = useState<boolean>(false)
 	const [showExpensesDetails, setShowExpensesDetails] = useState<boolean>(false)
+	const currentMonthLabel = months[new Date().getMonth()]
 
 	const onSubmit: SubmitHandler<FormValues> = async (data): Promise<void> => {
 		await expenseTable.add({
@@ -194,7 +195,9 @@ const App = (): ReactElement => {
 								totalsPerCategory.length > 0 && setShowExpensesDetails(!showExpensesDetails)
 							}}
 						>
-							<span className="text-xl text-gray-600">Mese corrente:</span>
+							<span className="text-xl text-gray-600">
+								{currentMonthLabel}:
+							</span>
 							{isLoadingCurrentTotal ? renderLoading('w-14') : (
 								<span className="text-2xl text-red-600">
 									{getFormattedTotal(totalCurrentMonthExpenses)}
@@ -351,7 +354,7 @@ const App = (): ReactElement => {
 									</div>
 									{isLoadingList ? renderLoading('w-40') : (
 										<span className="text-base text-gray-600">
-											{moment(item.date).format('LLL')}
+											{moment(item.date).format('DD-MM-YYYY HH:mm')}
 										</span>
 									)}
 								</div>
