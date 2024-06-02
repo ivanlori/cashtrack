@@ -12,6 +12,8 @@ const createOption = (label: string): Option => ({
 	value: label.toLowerCase().replace(/\W/g, ''),
 });
 
+const categoriesTable = db.table('categories')
+
 interface Props {
 	readonly showErrorStyle: boolean;
 	readonly resetValue: boolean;
@@ -28,13 +30,14 @@ export const CustomSelect = ({
 
 	const handleCreate = (inputValue: string): void => {
 		const newOption = createOption(inputValue.charAt(0).toUpperCase() + inputValue.slice(1));
-		db.table('categories').add({ name: newOption.label });
+		categoriesTable.add({ name: newOption.label });
 		setOptions((prev) => [...prev, newOption]);
 		setValue(newOption);
+		onChange(newOption);
 	}
 
 	useEffect(() => {
-		db.table('categories').toArray().then((categories) => {
+		categoriesTable.toArray().then((categories) => {
 			setOptions(categories.map(({ name }) => createOption(name)));
 		});
 	}, [])

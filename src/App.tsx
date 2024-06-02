@@ -286,10 +286,10 @@ const App = (): ReactElement => {
 								<CustomSelect
 									showErrorStyle={errors.category?.message !== undefined}
 									resetValue={hasSubmitted}
-									onChange={(value: Option | null): void => {
-										setSelectedCategory(value?.label || '')
+									onChange={(newValue: Option | null): void => {
+										setSelectedCategory(newValue?.label || '')
 										setHasSubmitted(false)
-										onChange(value?.value)
+										onChange(newValue?.value)
 									}}
 								/>
 							)}
