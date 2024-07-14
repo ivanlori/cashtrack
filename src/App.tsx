@@ -142,7 +142,7 @@ const App = (): ReactElement => {
 	}
 
 	const getFormattedTotal = (total: number | undefined): string => (
-		total ? `${total > 0 ? '-' : ''}${total}€` : 'N/D'
+		total ? `${total > 0 ? '-' : ''}${total.toFixed(2)}€` : 'N/D'
 	)
 
 	const renderLoading = (width: string): ReactElement => (
@@ -259,6 +259,7 @@ const App = (): ReactElement => {
 								className={cn(styles.Input, {
 									"border-red-600": errors.expense?.message
 								})}
+								data-testid="expense-input"
 								type="number"
 								step=".01"
 								placeholder="0"
@@ -304,11 +305,13 @@ const App = (): ReactElement => {
 					>
 						Aggiungi
 					</button>
-					<span className="text-red-600 mt-2 block">
-						{errors.expense?.message}
-						<br />
-						{errors.category?.message}
-					</span>
+					{(errors.expense || errors.category) && (
+						<span className="text-red-600 mt-2 block">
+							{errors.expense?.message}
+							<br />
+							{errors.category?.message}
+						</span>
+					)}
 				</form>
 				<SwipeableList className="mt-5 mx-auto" Tag="ul" type={Type.IOS}>
 					{allExpenses?.map((item: IDataSaved) => {
@@ -337,7 +340,7 @@ const App = (): ReactElement => {
 								className={styles.Item}
 							>
 								<div className="flex flex-col items-end gap mx-10 py-2">
-									<div>
+									<div data-testid="expense-item">
 										{
 											isLoadingList ? renderLoading('w-40') : (
 												<>
