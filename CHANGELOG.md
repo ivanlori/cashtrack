@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.2.1](https://github.com/ivanlori/budget/compare/v1.2.0...v1.2.1) (2024-07-14)
+
+
+### Bug Fixes
+
+* create label, format date and current month label ([db4c8d2](https://github.com/ivanlori/budget/commit/db4c8d2c1e9b42c6f6ef9b81b6ca84de86c73197))
+* general ([5b6b299](https://github.com/ivanlori/budget/commit/5b6b29981980efb87625450fc4e3e891a6e9885b))
+
 ## 1.2.0 (2024-06-02)
 
 
