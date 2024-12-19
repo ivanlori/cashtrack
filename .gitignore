@@ -10,6 +10,9 @@
 
 # production
 /build
+/docs/*.map
+/docs/static/js/*.map
+/docs/static/css/*.map
 
 # misc
 .DS_Store
