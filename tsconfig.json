@@ -5,7 +5,7 @@
 		}
 	},
 	"compilerOptions": {
-		"outDir": "build",
+		"outDir": "docs",
 		"module": "esnext",
 		"target": "es5",
 		"lib": [
@@ -24,7 +24,6 @@
 		"noImplicitThis": true,
 		"noImplicitAny": true,
 		"strictNullChecks": true,
-		"suppressImplicitAnyIndexErrors": true,
 		"ignoreDeprecations": "5.0",
 		"noUnusedLocals": true,
 		"noUnusedParameters": true,

@@ -254,11 +254,13 @@ const App = (): ReactElement => {
 					className="h-60 mx-10"
 				>
 					<div className="flex flex-col gap-3">
-						<div className="flex relative items-center">
+						<div className="flex relative flex-col gap-2">
+							<label htmlFor="price">Prezzo</label>
 							<input
 								className={cn(styles.Input, {
 									"border-red-600": errors.expense?.message
 								})}
+								id="price"
 								data-testid="expense-input"
 								type="number"
 								step=".01"
@@ -277,6 +279,7 @@ const App = (): ReactElement => {
 							/>
 							<span className="absolute right-0 mr-3 text-xl">€</span>
 						</div>
+						<label htmlFor="category">Seleziona o crea una categoria</label>
 						<Controller
 							control={control}
 							name="category"
@@ -288,6 +291,7 @@ const App = (): ReactElement => {
 							}}
 							render={({ field: { onChange } }): ReactElement => (
 								<CustomSelect
+									id="category"
 									showErrorStyle={errors.category?.message !== undefined}
 									resetValue={hasSubmitted}
 									onChange={(newValue: Option | null): void => {

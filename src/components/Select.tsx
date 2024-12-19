@@ -18,11 +18,13 @@ interface Props {
 	readonly showErrorStyle: boolean;
 	readonly resetValue: boolean;
 	readonly onChange: (value: Option | null) => void;
+	readonly id: string;
 }
 
 export const CustomSelect = ({
 	showErrorStyle,
 	resetValue,
+	id,
 	onChange,
 }: Props): ReactElement => {
 	const [options, setOptions] = useState<Option[]>([]);
@@ -58,6 +60,7 @@ export const CustomSelect = ({
 					borderRadius: 6,
 				}),
 			}}
+			inputId={id}
 			isClearable
 			onChange={(newValue: Option | null): void => {
 				setValue(newValue);
