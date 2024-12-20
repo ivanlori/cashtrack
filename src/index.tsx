@@ -20,7 +20,7 @@ const router = createBrowserRouter([
 		element: <App />,
 		index: true,
 	},
-]);
+], { basename: process.env.NODE_ENV === 'production' ? '/cashtrack' : '/' });
 
 const root = ReactDOM.createRoot(
 	document.getElementById('root') as HTMLElement

@@ -13,6 +13,7 @@
 /docs/*.map
 /docs/static/js/*.map
 /docs/static/css/*.map
+/docs/static/js/*.txt
 
 # misc
 .DS_Store
