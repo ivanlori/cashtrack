@@ -2,7 +2,7 @@
 	"name": "cashtrack",
 	"version": "1.2.1",
 	"private": true,
-	"homepage": "./",
+	"homepage": "https://ivanlori.github.io/cashtrack",
 	"dependencies": {
 		"@testing-library/jest-dom": "^5.17.0",
 		"@testing-library/react": "^13.4.0",
@@ -14,6 +14,7 @@
 		"dexie": "^4.0.1-rc.1",
 		"dexie-export-import": "^4.1.1",
 		"dexie-react-hooks": "^1.1.7",
+		"gh-pages": "^6.2.0",
 		"moment": "^2.30.1",
 		"react": "^18.3.1",
 		"react-dom": "^18.3.1",
@@ -41,6 +42,8 @@
 	},
 	"scripts": {
 		"start": "react-scripts start",
+		"predeploy": "npm run build",
+		"deploy": "gh-pages -d build",
 		"build": "BUILD_PATH=./docs react-scripts build",
 		"test": "react-scripts test --watchAll=false",
 		"eject": "react-scripts eject",
