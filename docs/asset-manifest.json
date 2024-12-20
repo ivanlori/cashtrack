@@ -1,16 +1,16 @@
 {
   "files": {
-    "main.css": "/cashtrack/static/css/main.408e1bd1.css",
-    "main.js": "/cashtrack/static/js/main.4e8fe3bb.js",
+    "main.css": "/cashtrack/static/css/main.31b851d0.css",
+    "main.js": "/cashtrack/static/js/main.4f135cde.js",
     "static/js/453.0a59cae8.chunk.js": "/cashtrack/static/js/453.0a59cae8.chunk.js",
     "service-worker.js": "/cashtrack/service-worker.js",
     "index.html": "/cashtrack/index.html",
-    "main.408e1bd1.css.map": "/cashtrack/static/css/main.408e1bd1.css.map",
-    "main.4e8fe3bb.js.map": "/cashtrack/static/js/main.4e8fe3bb.js.map",
+    "main.31b851d0.css.map": "/cashtrack/static/css/main.31b851d0.css.map",
+    "main.4f135cde.js.map": "/cashtrack/static/js/main.4f135cde.js.map",
     "453.0a59cae8.chunk.js.map": "/cashtrack/static/js/453.0a59cae8.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.408e1bd1.css",
-    "static/js/main.4e8fe3bb.js"
+    "static/css/main.31b851d0.css",
+    "static/js/main.4f135cde.js"
   ]
 }
