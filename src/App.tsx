@@ -75,7 +75,11 @@ const App = (): ReactElement => {
 	const [selectedCategory, setSelectedCategory] = useState<string>('')
 	const [hasSubmitted, setHasSubmitted] = useState<boolean>(false)
 	const [showExpensesDetails, setShowExpensesDetails] = useState<boolean>(false)
-	const currentMonthLabel = months[new Date().getMonth()]
+	const currentMonthIndex = new Date().getMonth()
+	const currentMonthLabel = months[currentMonthIndex]
+
+	// get December if current month is January otherwise previous month
+	const previousMonthIndex = currentMonthIndex === 0 ? 11 : currentMonthIndex - 1
 
 	const onSubmit: SubmitHandler<FormValues> = async (data): Promise<void> => {
 		await expenseTable.add({
@@ -108,11 +112,13 @@ const App = (): ReactElement => {
 
 	const totalPreviousMonthExpenses = useLiveQuery(async (): Promise<number> => {
 		setIsLoadingPreviousTotal(true)
-		const previousMonth = new Date().getMonth()
 		let total = 0
 
 		return await expenseTable
-			.filter((row) => new Date(row.date).getMonth() + 1 === previousMonth)
+			.filter((row) => {
+				const savedDataPerMonth = new Date(row.date).getMonth()
+				return currentMonthIndex === 0 ? (savedDataPerMonth === previousMonthIndex) : (savedDataPerMonth - 1 === previousMonthIndex)
+			})
 			.each((item: IDataSaved) => total += Number(item.value))
 			.then(() => Number(total.toFixed(2)))
 			.finally(() => setIsLoadingPreviousTotal(false))
@@ -179,7 +185,7 @@ const App = (): ReactElement => {
 				<div className="mx-10 mb-3">
 					<div className="previous-month flex items-center gap-2">
 						<span className="text-md text-gray-400">
-							{months[new Date().getMonth() - 1]}:
+							{months[previousMonthIndex]}:
 						</span>
 						{' '}
 						{isLoadingPreviousTotal ? renderLoading('w-14') : (
