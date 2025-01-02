@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.2.2](https://github.com/ivanlori/cashtrack/compare/v1.2.1...v1.2.2) (2025-01-02)
+
+
+### Bug Fixes
+
+* bug on new year previous month calculations ([8d1aa9b](https://github.com/ivanlori/cashtrack/commit/8d1aa9b6bce55fd6b6480c69cdfacc3b0510aa1e))
+
 ### [1.2.1](https://github.com/ivanlori/budget/compare/v1.2.0...v1.2.1) (2024-07-14)
 
 
