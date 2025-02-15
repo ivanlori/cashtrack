@@ -75,11 +75,11 @@ const App = (): ReactElement => {
 	const [selectedCategory, setSelectedCategory] = useState<string>('')
 	const [hasSubmitted, setHasSubmitted] = useState<boolean>(false)
 	const [showExpensesDetails, setShowExpensesDetails] = useState<boolean>(false)
-	const currentMonthIndex = new Date().getMonth()
-	const currentMonthLabel = months[currentMonthIndex]
+	const currentMonthIndex = new Date().getMonth() + 1
+	const currentMonthLabel = months[currentMonthIndex - 1]
 
-	// get December if current month is January otherwise previous month
-	const previousMonthIndex = currentMonthIndex === 0 ? 11 : currentMonthIndex - 1
+	// get December if current month is January
+	const previousMonthIndex = currentMonthIndex === 1 ? 12 : currentMonthIndex - 2
 
 	const onSubmit: SubmitHandler<FormValues> = async (data): Promise<void> => {
 		await expenseTable.add({
@@ -116,8 +116,8 @@ const App = (): ReactElement => {
 
 		return await expenseTable
 			.filter((row) => {
-				const savedDataPerMonth = new Date(row.date).getMonth()
-				return currentMonthIndex === 0 ? (savedDataPerMonth === previousMonthIndex) : (savedDataPerMonth - 1 === previousMonthIndex)
+				const savedDataPerMonth = new Date(row.date).getMonth() + 1
+				return currentMonthIndex === 1 ? (savedDataPerMonth === previousMonthIndex) : (savedDataPerMonth - 1 === previousMonthIndex)
 			})
 			.each((item: IDataSaved) => total += Number(item.value))
 			.then(() => Number(total.toFixed(2)))
